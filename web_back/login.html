@@ -61,7 +61,7 @@
             // 收集信息
             var name = $('#name').val();
             var password = $('#password').val();
-            console.log(name, password);
+            // console.log(name, password);
             if (name === '' || password === '') {
                 $('#modalMsg').text('用户名或密码不能为空');
                 $('#myModal').modal('show');
@@ -84,6 +84,8 @@
                         $('#modalMsg').text(result.msg);
                         $('#myModal').modal('show');
                     }
+                    $('#name').val('');
+                    $('#password').val('');
                 }
             });
         });
