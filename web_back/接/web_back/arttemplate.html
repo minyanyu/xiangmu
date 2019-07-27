@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>html页面</title>
+        <style>
+            .container {
+                width: 800px;
+                padding: 2em;
+                margin: 40px auto;
+                border: 1px solid #ccc;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class='container'>
+            <h1>标题</h1>
+            <div></div>
+        </div>
+        <script src="./js/template-web.js"></script>
+        <script>
+
+        </script>
+        <script type="text/html" id="abc">
+        {{each arr item}}
+        <tr>
+            <td>{{item.name}}</td>
+            <td>{{item.slug}}</td>
+        </tr>
+        {{/each}}
+        </script>
+        <script>
+            // 1. 定义模板
+            //  格式： script type="text/html"
+            // 2. 准备数据
+            var obj = {
+                a: 112321,
+                b: 12321313212,
+                arr: [
+                    { "id": 2, "name": "八卦", "slug": "fly111" },
+                    { "id": 4, "name": "新闻", "slug": "comfortablehome1" },
+                    { "id": 13, "name": "历史", "slug": "history" }]
+            }
+            // 3.渲染
+            //  template(模板的id，数据)
+            var htmlString = template("abc", obj);
+            console.log(htmlString)
+       //-----------------开始你的代码-----------------------
+
+        </script>
+    </body>
+
+</html>

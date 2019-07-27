@@ -138,16 +138,16 @@
                 url: 'http://localhost:8000/admin/logout',
                 type: 'post',
                 success: function(result) {
-                    console.log(result);
+                    // console.log(result);
                     window.location.href = 'login.html';
                 }
             });
         });
         //更改用户名
         $.get('http://localhost:8000/admin/getuser', function(result) {
-            console.log(result);
+            // console.log(result);
             $('#name').text(result.data.nickname);
-            $('#img').attr('src', result.data.user_pic)
+            $('#img').attr('src', result.data.user_pic);
         })
     </script>
 
