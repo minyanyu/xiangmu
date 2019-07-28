@@ -102,6 +102,28 @@
             </div>
         </div>
     </div>
+    <!--弹窗------------------ -->
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">系统提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMsg">是否删除</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <script src = './js/template-web.js'></script>
     <script type = 'text/html' id = 'xin'>
         {{each data ele}}
@@ -110,7 +132,7 @@
             <td>{{ele.slug}}</td>
             <td class="text-center">
                 <a href="javascript:editTr({&quot;id&quot;:&quot;3&quot;,&quot;slug&quot;:&quot;living&quot;,&quot;name&quot;:&quot;会生活&quot;});" class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 3 );"id = '{{ele.id}}' class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:deleteTr({{ele.id}});" class="btn btn-danger btn-xs">删除</a>
             </td>
             </tr>
         {{/each}}
@@ -138,27 +160,41 @@
             }
         })
     </script>
+
     <script>
+        // console.log($del);
+            function get() {
+                    $.get('http://localhost:8000/admin/category_search', function (result) {
+                        console.log(result);
+                        if (result.code === 200) {
+                            var htmlString = template("xin", result);
+                            $('#tbody').html(htmlString);
+                            //     result.data.forEach(function(ele) {
+                            //        var str = `<tr>
+                            //             <td>${ele.name}</td>
+                            //             <td>${ele.slug}</td>
+                            //             <td class="text-center">
+                            //                 <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
+                            //                 <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+                            //             </td>
+                            //         </tr>`
+                            //     $('#tbody').append(str);
+                            //  });
+                        }
+
+                    });
+                }
         // 发送请求
-        $.get('http://localhost:8000/admin/category_search', function(result) {
-            console.log(result);
-            if(result.code === 200) {
-                var htmlString = template("xin", result);
-                $('#tbody').html(htmlString);
-            //     result.data.forEach(function(ele) {
-            //        var str = `<tr>
-            //             <td>${ele.name}</td>
-            //             <td>${ele.slug}</td>
-            //             <td class="text-center">
-            //                 <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
-            //                 <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-            //             </td>
-            //         </tr>`
-            //     $('#tbody').append(str);
-            //  });
+        get();
+        function deleteTr(id) {
+                $.post('http://localhost:8000/admin/category_delete', { id: id }, function (result) {
+                    console.log(result);
+                    if (result.code === 200) {
+                        get();
+                    }
+                });
             }
-        
-        })
+     
     </script>
 </body>
 
