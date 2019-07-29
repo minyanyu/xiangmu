@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="js/bootstrap/js/bootstrap.min.js"></script>
+    <script src='./js/jquery.twbsPagination.min.js'></script>
 </head>
 
 <body>
@@ -54,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody id='tbody'>
-                    <tr>
+                    <!-- <tr>
                         <td>王积千造统最头</td>
                         <td>杰克</td>
                         <td>奇趣事</td>
@@ -62,10 +64,33 @@
                         <td class="text-center">已发布</td>
                         <td class="text-center">
                             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
+                            <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs" id='btnDel'>删除</a>
+                        </td> -->
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">系统提示</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="modalMsg">确认要删除吗</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary btn1">确认</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
                 </tbody>
+
             </table>
+
 
             <div class="row text-center">
                 <ul class="pagination pagination-sm">
@@ -87,22 +112,23 @@
     </div>
     <script src="./js/template-web.js"></script>
     <script type='text/html' id='search'>
-
         {{each data ele}}
         <tr>
         <td>{{ele.title}}</td>
         <td>{{ele.author}}</td>
         <td>{{ele.type}}</td>
         <td class="text-center">{{ele.date}}</td>
-        <td class="text-center">{{ele.status}}</td>
+        <td class="text-center">{{ele.state}}</td>
         <td class="text-center">
             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-            <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
+            <a href="javascript:;" data-id="{{ele.id}}" class="btn btnDel btn-danger btn-xs">删除</a>
         </td>
         </tr>
         {{/each}}
     </script>
     <script>
+        var delId = '';
+        var hpage = 1;
         // 定义模板-----
         // 设置左侧菜单
         $('#release_btn').click(function () {
@@ -111,10 +137,45 @@
         // 查询操作
         // 调接口  拼接数据
         // 把数据放到容器内
-        $.getJSON('http://localhost:8000/admin/search', function (result) {
-            // 遍历-----
-            var str = template('search', result);
-            $('#tbody').html(str);
+        function doQuery() {
+            $.getJSON('http://localhost:8000/admin/search', {page:hpage},function (result) {
+                // 遍历-----
+                console.log(result);
+                var str = template('search', result);
+                $('#tbody').html(str);
+                $('.pagination').twbsPagination({
+                    currentPage: 1,  // 初始页
+                    totalPages: result.totalPage,  // 总页数，可以通过翻页，或者最后一页
+                    startPage: 1,
+                    visiblePages: 6, // 可见页面
+                    first: "首页",
+                    last: "未页",
+                    prev: '上一页',
+                    next: '下一页',
+                    onPageClick: function (event, page) {
+                        console.log(event, page)
+                        hpage = page;
+                        doQuery();
+                    }
+                });
+            });
+        }
+        doQuery();
+        $('#tbody').on('click','.btnDel', function () {
+            delId = $(this).attr('data-id');
+            // console.log($(this).attr('data-id'));
+            $('#myModal').modal('show')
+        });
+        $('.btn1').click(function () {
+            $.getJSON('http://localhost:8000/admin/article_delete', { id:delId }, function (result) {
+                console.log('result', result);
+                if (result.code === 200) {
+                    // 1. 隐藏确认框
+                    $('#myModal').modal('hide')
+                    // 2、重新加载
+                    doQuery();
+                }
+            })
         });
     </script>
 
