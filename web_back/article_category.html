@@ -29,46 +29,12 @@
                     </tr>
                 </thead>
                 <tbody id='tbody'>
-                    <!-- <tr>
-                        <td>未分类</td>
-                        <td>uncategorized</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;1&quot;,&quot;slug&quot;:&quot;uncategorized&quot;,&quot;name&quot;:&quot;未分类&quot;});" class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>奇趣事</td>
-                        <td>funny</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>会生活</td>
-                        <td>living</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;3&quot;,&quot;slug&quot;:&quot;living&quot;,&quot;name&quot;:&quot;会生活&quot;});" class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 3 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>爱旅行</td>
-                        <td>travel</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;4&quot;,&quot;slug&quot;:&quot;travel&quot;,&quot;name&quot;:&quot;爱旅行&quot;});" class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 4 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr> -->
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal"
+                                id='add'>新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -94,23 +60,26 @@
                             <input type="text" class="form-control" id="txtSlug">
                         </div>
                     </form>
+                    <div id="t">
+
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
-                    <button type="button" class="btn btn-primary" id="model_add">新增</button>
+                    <button type="button" class="xbtn btn btn-primary" id="model_add">新增</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src = './js/template-web.js'></script>
-    <script type = 'text/html' id = 'xin'>
+    <script src='./js/template-web.js'></script>
+    <script type='text/html' id='xin'>
         {{each data ele}}
         <tr>
             <td>{{ele.name}}</td>
             <td>{{ele.slug}}</td>
             <td class="text-center">
-                <a href="javascript:editTr({&quot;id&quot;:&quot;3&quot;,&quot;slug&quot;:&quot;living&quot;,&quot;name&quot;:&quot;会生活&quot;});" class="btn btn-info btn-xs">编辑</a>
+                <a href="javascript:editTr({{ele}});" id ='btn1' class=" btn btn-info btn-xs">编辑</a>
                 <a href="javascript:deleteTr({{ele.id}});" class="btn btn-danger btn-xs">删除</a>
             </td>
             </tr>
@@ -122,72 +91,85 @@
             backdrop: false
         });
 
-        $('#model_shutoff').click(function() {
-            alert('shutoff');
+        $('#model_shutoff').click(function () {
             $('#addModal').modal('hide');
         });
 
-        $('#model_add').click(function() {
-            // 文章添加
-            // alert(1)
-            var name = $('#txtName').val();
-            var slug = $('#txtSlug').val();
-            $.post('http://localhost:8000/admin/category_add',
-            {
-                name:name,
-                slug:slug
-            }
-            ,function(result){
-                console.log(result);
-                if(result.code === 200) {
-                    get();
-                    $('#addModal').modal('hide');
-                }
-            })
-        });
-
-        $('.category_table').delegate('a', 'click', function() {
-            if ($(this).hasClass('btn-info')) {
-                $('#addModal .modal-title').html('修改分类名称');
-                $('#addModal').modal('show');
-            }
-        })
+        ;
     </script>
 
     <script>
-        // console.log($del);
-            function get() {
-                    $.get('http://localhost:8000/admin/category_search', function (result) {
+        // 全局变量 新增时候的id值
+        var deitId = '';
+        // 函数---加载页面
+        function get() {
+            $.get('http://localhost:8000/admin/category_search', function (result) {
+                console.log(result);
+                if (result.code === 200) {
+                    var htmlString = template("xin", result);
+                    $('#tbody').html(htmlString);
+                }
+            });
+        }
+        // 新增类别--------------------
+        $('#add').click(function () {
+            // 文章添加
+            // alert(1)
+            $('#t').hide().text('');
+            $('.xbtn').click(function () {
+                var name = $('#txtName').val();
+                var slug = $('#txtSlug').val();
+                $.post('http://localhost:8000/admin/category_add',
+                    {
+                        name: name,
+                        slug: slug
+                    }
+                    , function (result) {
                         console.log(result);
                         if (result.code === 200) {
-                            var htmlString = template("xin", result);
-                            $('#tbody').html(htmlString);
-                            //     result.data.forEach(function(ele) {
-                            //        var str = `<tr>
-                            //             <td>${ele.name}</td>
-                            //             <td>${ele.slug}</td>
-                            //             <td class="text-center">
-                            //                 <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
-                            //                 <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-                            //             </td>
-                            //         </tr>`
-                            //     $('#tbody').append(str);
-                            //  });
+                            $('#addModal').modal('hide');
+                            $('#txtName').val('');
+                            $('#txtSlug').val('');
+                            get();
+                        } else {
+                            // 提示错误
+                            $('#t').show().text(result.msg);
                         }
+                    })
+            })
 
-                    });
-                }
-        // 发送请求
+        });
+        // 新增结束---------------
+        // 发送请求  加载页面
         get();
+        // 点击a标签删除时的函数--------------
         function deleteTr(id) {
-                $.post('http://localhost:8000/admin/category_delete', { id: id }, function (result) {
-                    console.log(result);
-                    if (result.code === 200) {
-                        get();
-                    }
-                });
-            }
-     
+            $.post('http://localhost:8000/admin/category_delete', { id: id }, function (result) {
+                console.log(result);
+                if (result.code === 200) {
+                    get();
+                }
+            });
+        }
+        //点击a标签修改时的函数--------------
+        function editTr(xiugai) {
+            deitId = xiugai.id;
+            $('#addModal .modal-title').html('修改分类名称');
+            $('#addModal #model_add').html('确认修改');
+            // 显示框
+            $("#txtName").val(xiugai.name);
+            $("#txtSlug").val(xiugai.slug);
+            // 显示
+            $('#addModal').modal('show');
+        };
+        // 修改后由于供应一个结构,新增的发生改变---修改了这个bug
+        $('#add').click(function () {
+            $('#addModal .modal-title').html('添加分类名称');
+            $('#addModal #model_add').html('添加');
+            $("#txtName").val('');
+            $("#txtSlug").val('');
+        });
+
     </script>
 </body>
 
