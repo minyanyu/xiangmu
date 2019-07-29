@@ -20,51 +20,88 @@
             用户信息修改
         </div>
         <div class="container-fluid common_con">
-            <form class="form-horizontal article_form">
+            <form class="form-horizontal article_form" id='my'>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="李思思">
+                        <input type="text" class="form-control" name='username' id="txtName" value="李思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="思思">
+                        <input type="text" class="form-control" name='nickname' id="txtNickName" value="思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="lisisi@126.com">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
-                    <div class="col-sm-10">
-                        <img src="images/2.jpg" alt="" class="user_pic">
-                        <input type="file" id="exampleInputFile">
+                        <input type="text" class="form-control" name='email' id="txtEmail" value="lisisi@126.com">
                     </div>
                 </div>
 
                 <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
-                        <div class="col-sm-4">
-                            <input type="password" class="form-control" id="inputEmail3" value="12345678">
-                        </div>
+                    <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
+                    <div class="col-sm-10">
+                        <img src="images/2.jpg" alt="" class="user_pic" id='pic'>
+                        <input type="file" name="user_pic" id = 'user_pic'>
                     </div>
-               
-    
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
+                    <div class="col-sm-4">
+                        <input type="password" name='password' class="form-control" id="inputEmail3" value="">
+                    </div>
+                </div>
+
+
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="button" class="btn btn-success" id='btn'>修改</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
+    <script>
+        function gg() {
+            // 获取用户信息----
+            $.get('http://localhost:8000/admin/userinfo_get', function (res) {
+                console.log(res);
+              if(res.code ===200) {
+                $('#txtEmail').val(res.data.email);
+                $('#txtNickName').val(res.data.nickname);
+                $('#pic').attr('src', res.data.user_pic);
+                $('#txtName').val(res.data.username);
+              }
+            });
+        }
+        gg();
+        // 获取完信息之后上传  编辑用户信息  当你点击修改的时候
+        $('#btn').click(function () {
+            var fn = new FormData(document.getElementById('my'));
+            $.ajax({
+                url: 'http://localhost:8000/admin/userinfo_edit',
+                type: 'post',
+                data: fn,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    console.log(res);
+                    if (res.code === 200) {
+                        window.location.href = 'login.html';
+                    }
+                }
+            });
+        });
+        // 图片预览 
+        $('#user_pic').change(function() {
+            var imgflie = this.files[0];
+            var imgUrl = URL.createObjectURL(imgflie);
+            $('#pic').attr('src',imgUrl);
+        });
+    </script>
 </body>
 
 </html>
