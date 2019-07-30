@@ -23,29 +23,29 @@
             文章编辑
         </div>
         <div class="container-fluid common_con">
-            <form class="form-horizontal article_form">
+            <form class="form-horizontal article_form" id='my'>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" value="文章标题文字">
+                        <input type="email" class="form-control" name='title' id="title" value="文章标题文字">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <img src="images/pic06.jpg" class="article_cover">
-                        <input type="file" id="exampleInputFile">
+                        <img src="images/pic06.jpg" class="article_cover" id="cover">
+                        <input type="file" name='cover'>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
-                            <option>类别一</option>
+                        <select class="form-control" id='opt' name ='type'>
+                            <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
                             <option selected>类别四</option>
-                            <option>类别五</option>
+                            <option>类别五</option> -->
                         </select>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" value="2019-05-17" id="dateinput">
+                            <input type="text" class="form-control" name='date' value="2019-05-17" id="dateinput">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -66,18 +66,71 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容" value="文章内容">
+                        <input type="text" class="form-control" id="rich_content" placeholder="文章内容"
+                            value="文章内容">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="button" class="btn btn-success" id='btn'>修改</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <script src='./js/template-web.js'></script>
+    <script type='text/html' id='template'>
+        {{each data ele}}
+        <option value = '{{ele.id}}'>{{ele.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        var id = '';
+        // 获取文章类型------
+        $.get('http://localhost:8000/admin/category_search', function (res) {
+            console.log(res);
+            var htmlStr = template('template', res);
+            $('#opt').append(htmlStr);
+        })
+        function get() {
+            // 先获取id
+            id = window.location.search.substr(4);
+            console.log(id);
+            $.get('http://localhost:8000/admin/search', { id: id }, function (res) {
+                console.log(res);
+                if (res.code === 200) {
+                    $('#title').val(res.data.title);
+                    $('#dateinput').val(res.data.date);
+                    $('#cover').attr('src', res.data.cover);
+                    $('#rich_content').val(res.data.content);
+                }
+            })
+        }
+        get();
+        // 带着数据过去请求  设置点击事件
+        $('#btn').click(function () {
+            id = window.location.search.substr(4);
+            var fn = new FormData(document.getElementById('my'));
+            fn.append('id', id);
+            fn.append("content", tinyMCE.activeEditor.getContent());
+            $.ajax({
+                url: 'http://localhost:8000/admin/article_edit',
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: fn,
+                success: function (res) {
+                    console.log(res);
+                    if (res.code === 200) {
+                        window.location.href = 'article_list.html';
+                    }
+                }
+            })
+        });
 
+
+
+    </script>
 </body>
 
 </html>
